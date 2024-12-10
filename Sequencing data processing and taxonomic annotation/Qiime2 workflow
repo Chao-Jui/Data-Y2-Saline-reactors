@@ -63,7 +63,7 @@ qiime gcn-norm copy-num-normalize \
 # Output the qza file as a tsv 
 qiime tools export \
 --input-path tables/table-normalized.qza \
---output-path tables/ASV_table_normalized
+--output-path tables/ASV_table_normalized_Daughter1_110
 
 
 
