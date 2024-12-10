@@ -1,0 +1,70 @@
+#
+conda activate qiime2-2021.11
+
+# Import data
+qiime tools import \
+    --type 'SampleData[PairedEndSequencesWithQuality]' \
+    --input-path manefest_Daughter1_110.txt \
+    --output-path Daughter1_110_demux.qza \
+    --input-format PairedEndFastqManifestPhred33V2 
+
+# Read the data quality
+qiime demux summarize \
+    --i-data Daughter1_110_demux.qza \
+    --o-visualization Daughter1_110_demux.qzv 
+
+# Information of primer
+#515F (5'-GTGYCAGCMGCCGCGGTAA-3') length=19 
+#926R (5'-CCGYCAATTYMTTTRAGTTT-3') length=20
+
+# DADA2 disnose
+qiime dada2 denoise-paired \
+    --i-demultiplexed-seqs Daughter1_110_demux.qza \
+    --p-trim-left-f 19 \
+    --p-trim-left-r 20 \
+    --p-trunc-len-f 264 \
+    --p-trunc-len-r 165 \
+    --o-representative-sequences tables/rep_seqs.qza \
+    --o-table tables/table.qza \
+    --o-denoising-stats tables/denoising_stats.qza \
+    --p-n-threads 20 
+
+# Train 16s database (trunc by primer set)
+qiime feature-classifier extract-reads \
+    --i-sequences silva-138-99-seqs.qza \
+    --p-f-primer GTGYCAGCMGCCGCGGTAA \
+    --p-r-primer CCGYCAATTYMTTTRAGTTT \
+    --o-reads  silva_138_99_16S_515F926R.qza 
+
+# Train classifier(annotation the trained database by toxonomy)
+qiime feature-classifier fit-classifier-naive-bayes \
+    --i-reference-reads silva_138_99_16S_515F926R.qza \
+    --i-reference-taxonomy silva-138-99-tax.qza \
+    --o-classifier silva_138_99_16S_515F926R_classifier.qza 
+
+# Annotation OF the taxonomic data to the ASV table
+qiime feature-classifier classify-sklearn \
+    --i-classifier silva_138_99_16S_515F926R_classifier.qza 
+    --i-reads tables/rep_seqs.qza 
+    --o-classification taxonomy/138_taxonomy.qza 
+
+# Normalizing sequences by 16S rRNA gene copy number (GCN) based on rrnDB database
+qiime gcn-norm copy-num-normalize \
+    --i-table tables/table.qza \
+    --i-taxonomy taxonomy/138_taxonomy.qza \
+    --o-gcn-norm-table tables/table-normalized.qza
+
+# Output the qza file as a tsv 
+qiime tools export \
+--input-path tables/table-normalized.qza \
+--output-path tables/ASV_table_normalized
+
+
+
+
+
+
+
+
+
+
