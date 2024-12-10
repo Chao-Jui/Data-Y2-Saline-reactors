@@ -53,6 +53,9 @@ qiime feature-classifier classify-sklearn \
     --i-classifier silva_138_99_16S_515F926R_classifier.qza 
     --i-reads tables/rep_seqs.qza 
     --o-classification taxonomy/138_taxonomy.qza 
+qiime metadata tabulate \
+  --m-input-file taxonomy/138_taxonomy.qza \
+  --o-visualization taxonomy/138_taxonomy.qzv
 
 # Normalizing sequences by 16S rRNA gene copy number (GCN) based on rrnDB database
 qiime gcn-norm copy-num-normalize \
