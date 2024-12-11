@@ -4,25 +4,28 @@ conda activate qiime2-2021.11
 # Import data
 qiime tools import \
     --type 'SampleData[PairedEndSequencesWithQuality]' \
-    --input-path manefest_UASB_Daughter1_110.txt \
-    --output-path UASB_Daughter1_110_demux.qza \
+    --input-path manefest_Daughter1_110.txt \
+    --output-path Daughter1_110_demux.qza \
     --input-format PairedEndFastqManifestPhred33V2 
 
 # Read the data quality
 qiime demux summarize \
-    --i-data UASB_Daughter1_110_demux.qza \
-    --o-visualization UASB_Daughter1_110_demux.qzv 
+    --i-data Daughter1_110_demux.qza \
+    --o-visualization Daughter1_110_demux.qzv 
+
+#Feature statistic
+qiime feature-table summarize \
+    --i-table tables/table.qza \
+    --o-visualization tables/table.qzv \
+    --m-sample-metadata-file metadata_Daughter1_110.txt 
 
 # Information of primer
 #515F (5'-GTGYCAGCMGCCGCGGTAA-3') length=19 
 #926R (5'-CCGYCAATTYMTTTRAGTTT-3') length=20
 
-#make a folder for tables
-mkdir tables 
-
 # DADA2 disnose
 qiime dada2 denoise-paired \
-    --i-demultiplexed-seqs UASB_Daughter1_110_demux.qza \
+    --i-demultiplexed-seqs Daughter1_110_demux.qza \
     --p-trim-left-f 19 \
     --p-trim-left-r 20 \
     --p-trunc-len-f 264 \
@@ -31,15 +34,6 @@ qiime dada2 denoise-paired \
     --o-table tables/table.qza \
     --o-denoising-stats tables/denoising_stats.qza \
     --p-n-threads 20 
-
-#Feature statistic
-qiime feature-table summarize \
-    --i-table tables/table.qza \
-    --o-visualization tables/table.qzv \
-    --m-sample-metadata-file metadata_UASB_Daughter1_110.txt 
-
-#make a folder for taxonomy
-mkdir taxonomy 
 
 # Train 16s database (trunc by primer set)
 qiime feature-classifier extract-reads \
@@ -59,7 +53,6 @@ qiime feature-classifier classify-sklearn \
     --i-classifier silva_138_99_16S_515F926R_classifier.qza 
     --i-reads tables/rep_seqs.qza 
     --o-classification taxonomy/138_taxonomy.qza 
-
 qiime metadata tabulate \
   --m-input-file taxonomy/138_taxonomy.qza \
   --o-visualization taxonomy/138_taxonomy.qzv
@@ -72,15 +65,17 @@ qiime gcn-norm copy-num-normalize \
 
 # Output the qza file as a tsv 
 qiime tools export \
-    --input-path tables/table-normalized.qza \
-    --output-path tables/ASV_table_normalized_UASB_Daughter1_110
-
-biom convert -i tables/ASV_table_normalized_UASB_Daughter1_110/feature-table.biom -o tables/ASV_table_normalized_UASB_Daughter1_110.tsv --to-tsv
+--input-path tables/table-normalized.qza \
+--output-path tables/ASV_table_normalized_Daughter1_110
 
 #Extract the rep_dna-sequences.fasta file
 qiime tools export \
     --input-path tables/rep_seqs.qza \
     --output-path tables/rep_seqs
+
+biom convert -i tables/rep_seqs/dna-sequences.fasta -o tables/rep_seqs.tsv --to-tsv
+
+convert-fasta-to-csv <tables/rep_seqs/dna-sequences.fasta > rep_dna-sequences.fasta.csv
 
 
 
