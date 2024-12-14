@@ -1,1 +1,2 @@
-Do the Qiime2 workflow first then run the KTU scropt
+Run 01_Qiime2 workflow first in the Linux terminal
+then run 02_KTU_modify_UASB_Daughter1_110_rm_path.R in R 
