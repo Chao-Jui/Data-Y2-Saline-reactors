@@ -45,6 +45,12 @@ qiime metadata tabulate \
   --m-input-file tables/denoising_stats.qza \
   --o-visualization tables/denoising_stats.qzv 
 
+#You can download the required database from the following link
+#silva-138-99-seqs.qza
+#https://data.qiime2.org/2022.2/common/silva-138-99-seqs.qza
+#silva-138-99-tax.qza
+#https://data.qiime2.org/2022.2/common/silva-138-99-tax.qza
+
 # Train 16s database (trunc by primer set)
 qiime feature-classifier extract-reads \
     --i-sequences silva-138-99-seqs.qza \
