@@ -1,5 +1,5 @@
 #
-conda activate qiime2-2021.11
+conda activate qiime2-2020.2
 
 # Move to the workspace
 cd /Your/PATH/UASB_Daughter1_110
@@ -50,20 +50,20 @@ qiime feature-classifier extract-reads \
     --i-sequences silva-138-99-seqs.qza \
     --p-f-primer GTGYCAGCMGCCGCGGTAA \
     --p-r-primer CCGYCAATTYMTTTRAGTTT \
-    --o-reads  silva_138_99_16S_515F926R.qza 
+    --o-reads  silva_138_99_16S_515F926R_forQ2_2020ver.qza 
 
 # Train classifier(annotation the trained database by toxonomy)
 qiime feature-classifier fit-classifier-naive-bayes \
     --i-reference-reads silva_138_99_16S_515F926R.qza \
     --i-reference-taxonomy silva-138-99-tax.qza \
-    --o-classifier silva_138_99_16S_515F926R_classifier.qza 
+    --o-classifier silva_138_99_16S_515F926R_classifier_forQ2_2020ver.qza 
 
 #make a folder for taxonomy
 mkdir taxonomy 
 
 # Annotation OF the taxonomic data to the ASV table
 qiime feature-classifier classify-sklearn \
-    --i-classifier silva_138_99_16S_515F926R_classifier.qza 
+    --i-classifier silva_138_99_16S_515F926R_classifier_forQ2_2020ver.qza 
     --i-reads tables/rep_seqs.qza 
     --o-classification taxonomy/138_taxonomy.qza 
 qiime metadata tabulate \
