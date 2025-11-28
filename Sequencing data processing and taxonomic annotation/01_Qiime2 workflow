@@ -60,7 +60,7 @@ qiime feature-classifier extract-reads \
 
 # Train classifier(annotation the trained database by toxonomy)
 qiime feature-classifier fit-classifier-naive-bayes \
-    --i-reference-reads silva_138_99_16S_515F926R.qza \
+    --i-reference-reads silva_138_99_16S_515F926R_forQ2_2020ver.qza \
     --i-reference-taxonomy silva-138-99-tax.qza \
     --o-classifier silva_138_99_16S_515F926R_classifier_forQ2_2020ver.qza 
 
